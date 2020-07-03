@@ -1,0 +1,39 @@
+- hosts: all
+  become: yes
+  become_user: root
+  tasks:
+    - name: uninstall Docker
+      command: yum remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
+
+    - name: check user name
+      command: echo $(whoami)
+
+    - name: update yum utils
+      command: yum install -y yum-utils device-mapper-persistent-data lvm2
+
+    - name: add repository
+      command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: install docker
+      command: yum install -y  docker-ce-19.03.12 docker-ce-cli-19.03.12 containerd.io
+
+    - name: enable docker
+      command: systemctl enable docker
+
+    - name: start docker
+      command: systemctl start docker
+
+    - name: download docker-compose
+      command: sudo curl -L "https://github.com/docker/compose/releases/download/1.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+    - name: change permission
+      command: sudo chmod +x /usr/local/bin/docker-compose
+
+    - name: link docker-compose to /usr/bin
+      command: sudo ln -f -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+    - name: verify docker-compose version
+      command: docker-compose --version
+
+    - name: enable docker-compose
+      command: systemctl enable docker-compose
