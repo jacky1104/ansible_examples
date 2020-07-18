@@ -1,0 +1,19 @@
+---
+- name: fetch config files
+  hosts: all
+  tasks:
+    - name: get files list
+      find:
+        paths: /etc/fcld/
+        patterns: ".*conf$"
+        use_regex: True
+        file_type: any
+      register: file_2_fetch
+
+    - name: fetch config files
+      fetch:
+        src: "{{ item.path }}"
+        dest: /home/jackyxiang/qa_dev_global_config/
+        flat: yes
+      with_items:
+        - "{{ file_2_fetch.files }}"
