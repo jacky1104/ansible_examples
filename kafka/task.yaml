@@ -1,0 +1,60 @@
+- hosts: all
+  become: yes
+  tasks:
+  - name: Create docker-compose folder
+    ansible.builtin.file:
+      path: /home/kafka/docker-compose
+      state: directory
+      mode: '0755'
+
+  - name: Copy env file
+    ansible.builtin.copy:
+      src: .env
+      dest: /home/kafka/docker-compose/.env
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Copy docker-compose file
+    ansible.builtin.copy:
+      src: docker-compose.yml
+      dest: /home/kafka/docker-compose/docker-compose.yml
+      owner: root
+      group: root
+      mode: '0755'
+
+
+- hosts: worker1
+  become: yes
+  tasks:
+  - name: replace cluster node id
+    ansible.builtin.replace:
+      path: /home/kafka/docker-compose/.env
+      regexp: 'CLUSTER_NODE_ID=1'
+      replace: 'CLUSTER_NODE_ID=2'
+
+- hosts: worker2
+  become: yes
+  tasks:
+    - name: replace cluster node id
+      ansible.builtin.replace:
+        path: /home/kafka/docker-compose/.env
+        regexp: 'CLUSTER_NODE_ID=1'
+        replace: 'CLUSTER_NODE_ID=3'
+
+
+- hosts: master
+  become: yes
+  tasks:
+  - name: start master node
+    command: docker-compose up -d
+    args:
+      chdir: /home/kafka/docker-compose
+
+- hosts: workers
+  become: yes
+  tasks:
+    - name: start worker node
+      command: docker-compose up -d kafka zookeeper
+      args:
+        chdir: /home/kafka/docker-compose
