@@ -24,13 +24,25 @@
 
    - name: disable SELinux
      command: setenforce 0
+     ignore_errors: yes
 
    - name: swap off 
      command: swapoff -a
+     ignore_errors: yes
 
    - name: disable SELinux on reboot
      selinux:
        state: disabled
+     ignore_errors: yes
+
+# remove old cni if exists
+   - name: ip link set cni0 down
+     shell: ip link set cni0 down
+     ignore_errors: yes
+
+   - name: brctl delbr cni0
+     shell: brctl delbr cni0
+     ignore_errors: yes
 
    - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
      sysctl:
@@ -68,6 +80,19 @@
        name: kubelet
        enabled: yes
        state: started
+
+   - name: reset kubeadm
+     shell: kubeadm reset -f
+
+   - name: stop docker
+     shell: systemctl stop docker
+
+   - name: iptables -F
+     shell: iptables -F
+
+   - name: start docker
+     shell: systemctl start docker
+
 
 - hosts: master
   become: yes

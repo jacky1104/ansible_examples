@@ -2,6 +2,8 @@
 
 1. make sure all the nodes has the right hostname
 
+hostnamectl set-hostname <host-name>
+
 2.
 
 ```markdown
