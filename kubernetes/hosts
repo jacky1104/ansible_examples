@@ -1,9 +1,10 @@
 [masters]
-master ansible_host=172.16.97.97 ansible_user=root
+#master ansible_host=172.16.97.97 ansible_user=root
 
 [workers]
-van-200479-dnode2 ansible_host=172.16.97.152 ansible_user=root
-van-200479-dnode3 ansible_host=172.16.97.153 ansible_user=root
-van-200479-dnode4 ansible_host=172.16.97.154 ansible_user=root
-van-200479-dnode5 ansible_host=172.16.97.155 ansible_user=root
-van-200479-dnode6 ansible_host=172.16.97.156 ansible_user=root
+van-200479-dnode1 ansible_host=172.16.97.151 ansible_user=root
+#van-200479-dnode2 ansible_host=172.16.97.152 ansible_user=root
+#van-200479-dnode3 ansible_host=172.16.97.153 ansible_user=root
+#van-200479-dnode4 ansible_host=172.16.97.154 ansible_user=root
+#van-200479-dnode5 ansible_host=172.16.97.155 ansible_user=root
+#van-200479-dnode6 ansible_host=172.16.97.156 ansible_user=root
