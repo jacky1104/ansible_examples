@@ -1,0 +1,68 @@
+- hosts: all
+  become: yes
+  tasks:
+   - name: uninstall Docker
+     command: yum remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
+
+   - name: update yum utils 
+     command: yum install -y yum-utils device-mapper-persistent-data lvm2
+  
+   - name: add repository
+     command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+
+   - name: install docker
+     command: yum install -y  docker-ce docker-ce-cli containerd.io
+
+   - name: enable docker 
+     command: systemctl enable docker
+
+   - name: start Docker
+     service:
+       name: docker
+       state: started
+
+   - name: disable SELinux
+     command: setenforce 0
+     ignore_errors: yes
+
+   - name: swap off 
+     command: swapoff -a
+     ignore_errors: yes
+
+   - name: disable SELinux on reboot
+     selinux:
+       state: disabled
+     ignore_errors: yes
+
+# remove old cni if exists
+   - name: ip link set cni0 down
+     shell: ip link set cni0 down
+     ignore_errors: yes
+
+   - name: brctl delbr cni0
+     shell: brctl delbr cni0
+     ignore_errors: yes
+
+   - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
+     sysctl:
+      name: net.bridge.bridge-nf-call-ip6tables
+      value: 1
+      state: present
+
+   - name: ensure net.bridge.bridge-nf-call-iptables is set to 1
+     sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      state: present
+
+   - name: add Kubernetes' YUM repository
+     yum_repository:
+      name: Kubernetes
+      description: Kubernetes YUM repository
+      baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+      gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+      gpgcheck: yes
+
+   - name: install kubelet
+     shell: sudo yum install -y kubelet-v1.23 kubeadm-v1.23 kubectl-v1.23 --disableexcludes=kubernetes
