@@ -62,7 +62,13 @@
       description: Kubernetes YUM repository
       baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
       gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-      gpgcheck: yes
+      gpgcheck: no
+
+   - name: disable firewalld
+       shell: systemctl disable firewalld && systemctl stop firewalld
 
    - name: install kubelet
-     shell: sudo yum install -y kubelet-v1.23 kubeadm-v1.23 kubectl-v1.23 --disableexcludes=kubernetes
+     shell: yum install -y kubelet-v1.23.6 kubeadm-v1.23.6 kubectl-v1.23.6 --disableexcludes=kubernetes
+
+   - name: enable kubelet
+        shell: systemctl enable kubelet
