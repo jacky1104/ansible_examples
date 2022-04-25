@@ -71,4 +71,4 @@
      shell: yum install -y kubelet-v1.23.6 kubeadm-v1.23.6 kubectl-v1.23.6 --disableexcludes=kubernetes
 
    - name: enable kubelet
-        shell: systemctl enable kubelet
+        shell: systemctl enable kubelet && systemctl start kubelet
